@@ -5,12 +5,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/shared/ui/kit/form";
-import { Input } from "@/shared/ui/kit/input";
+} from "@/shared/ui/kit/form.tsx";
+import { Input } from "@/shared/ui/kit/input.tsx";
 import { useForm } from "react-hook-form";
 import { Button } from "@/shared/ui/kit/button.tsx";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useLogin } from "@/features/auth/model/use-login.ts";
 
 const loginSchema = z.object({
   email: z.string().email("Неверный email или пароль"),
@@ -22,9 +23,9 @@ export function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmits = form.handleSubmit((data) => {
-    console.log(data);
-  });
+  const { isPending, errorMessage, login } = useLogin();
+
+  const onSubmits = form.handleSubmit(login);
 
   return (
     <Form {...form}>
@@ -49,13 +50,18 @@ export function LoginForm() {
             <FormItem>
               <FormLabel>Пароль</FormLabel>
               <FormControl>
-                <Input placeholder="*******" {...field}  type={'password'}/>
+                <Input placeholder="*******" {...field} type={"password"} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type={"submit"}>Войти</Button>
+        {errorMessage && (
+          <FormMessage className={'text-destructive text-sm'}>{errorMessage}</FormMessage>
+        )}
+        <Button type={"submit"} disabled={isPending}>
+          Войти
+        </Button>
       </form>
     </Form>
   );

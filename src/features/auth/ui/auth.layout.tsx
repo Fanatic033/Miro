@@ -6,7 +6,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/shared/ui/kit/card";
+} from "@/shared/ui/kit/card.tsx";
 
 export function AuthLayout({
   form,
