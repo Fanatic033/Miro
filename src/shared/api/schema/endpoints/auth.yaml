@@ -100,3 +100,4 @@ refresh:
             $ref: '#/schemas/AuthResponse'
     '401':
       $ref: '../shared/responses.yaml#/UnauthorizedError'
+

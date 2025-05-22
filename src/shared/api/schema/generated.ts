@@ -86,6 +86,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Refresh access token */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: {
+                    refreshToken?: string;
+                };
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Access token refreshed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthResponse"];
+                    };
+                };
+                401: components["responses"]["UnauthorizedError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/boards": {
         parameters: {
             query?: never;
@@ -96,13 +135,7 @@ export interface paths {
         /** Get all boards for current user */
         get: {
             parameters: {
-                query?: {
-                    page?: number;
-                    limit?: number;
-                    sort?: "createdAt" | "updatedAt" | "lastOpenedAt" | "name";
-                    isFavorite?: boolean;
-                    search?: string;
-                };
+                query?: never;
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -115,7 +148,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["BoardsList"];
+                        "application/json": components["schemas"]["Board"][];
                     };
                 };
                 401: components["responses"]["UnauthorizedError"];
@@ -130,7 +163,13 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                    };
+                };
+            };
             responses: {
                 /** @description Board created successfully */
                 201: {
@@ -157,30 +196,15 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get a board by id */
         get: {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    boardId: string;
-                };
+                path?: never;
                 cookie?: never;
             };
             requestBody?: never;
-            responses: {
-                /** @description Board */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Board"];
-                    };
-                };
-                401: components["responses"]["UnauthorizedError"];
-                404: components["responses"]["NotFoundError"];
-            };
+            responses: never;
         };
         put?: never;
         post?: never;
@@ -244,18 +268,6 @@ export interface components {
         Board: {
             id: string;
             name: string;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            /** Format: date-time */
-            lastOpenedAt: string;
-            isFavorite: boolean;
-        };
-        BoardsList: {
-            list: components["schemas"]["Board"][];
-            total: number;
-            totalPages: number;
         };
     };
     responses: {

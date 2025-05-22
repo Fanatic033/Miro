@@ -39,3 +39,4 @@ export const boardsHandlers = [
     return HttpResponse.json({ message: "Board deleted", code: "OK" });
   }),
 ];
+

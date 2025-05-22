@@ -1,12 +1,16 @@
 import { rqClient } from "@/shared/api/instance.ts";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/shared/model/routes.tsx";
-import type {ApiSchemas} from "@/shared/api/schema";
+import type { ApiSchemas } from "@/shared/api/schema";
+import { useSession } from "@/shared/model/session.ts";
 
 export function useLogin() {
   const navigate = useNavigate();
+
+  const session = useSession();
   const loginMutation = rqClient.useMutation("post", "/auth/login", {
-    onSuccess() {
+    onSuccess(data) {
+      session.login(data.accessToken);
       navigate(ROUTES.HOME);
     },
   });
@@ -20,6 +24,6 @@ export function useLogin() {
   return {
     login,
     isPending: loginMutation.isPending,
-     errorMessage,
+    errorMessage,
   };
 }
