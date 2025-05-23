@@ -86,7 +86,7 @@ export const authHandlers = [
         user: newUser,
       },
       {
-        status: 201,
+        status: 200,
         headers: { "Set-Cookie": createRefreshTokenCookie(refreshToken) },
       },
     );
