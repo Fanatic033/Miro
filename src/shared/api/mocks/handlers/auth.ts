@@ -1,10 +1,11 @@
-import type { ApiSchemas } from "@/shared/api/schema";
+import type { ApiSchemas } from "../../schema";
 import { http } from "../http";
 import { delay, HttpResponse } from "msw";
 import {
   createRefreshTokenCookie,
-  generateTokens, verifyToken,
-} from "@/shared/api/mocks/session/session.ts";
+  generateTokens,
+  verifyToken,
+} from "../session";
 
 const mockUsers: ApiSchemas["User"][] = [
   {
@@ -12,6 +13,7 @@ const mockUsers: ApiSchemas["User"][] = [
     email: "admin@gmail.com",
   },
 ];
+
 const userPasswords = new Map<string, string>();
 userPasswords.set("admin@gmail.com", "123456");
 
@@ -30,7 +32,7 @@ export const authHandlers = [
           message: "Неверный email или пароль",
           code: "INVALID_CREDENTIALS",
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -38,9 +40,10 @@ export const authHandlers = [
       userId: user.id,
       email: user.email,
     });
+
     return HttpResponse.json(
       {
-        accessToken,
+        accessToken: accessToken,
         user,
       },
       {
@@ -48,7 +51,7 @@ export const authHandlers = [
         headers: {
           "Set-Cookie": createRefreshTokenCookie(refreshToken),
         },
-      },
+      }
     );
   }),
 
@@ -63,7 +66,7 @@ export const authHandlers = [
           message: "Пользователь уже существует",
           code: "USER_EXISTS",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -72,13 +75,13 @@ export const authHandlers = [
       email: body.email,
     };
 
-    mockUsers.push(newUser);
-    userPasswords.set(body.email, body.password);
-
     const { accessToken, refreshToken } = await generateTokens({
       userId: newUser.id,
       email: newUser.email,
     });
+
+    mockUsers.push(newUser);
+    userPasswords.set(body.email, body.password);
 
     return HttpResponse.json(
       {
@@ -86,12 +89,13 @@ export const authHandlers = [
         user: newUser,
       },
       {
-        status: 200,
-        headers: { "Set-Cookie": createRefreshTokenCookie(refreshToken) },
-      },
+        status: 201,
+        headers: {
+          "Set-Cookie": createRefreshTokenCookie(refreshToken),
+        },
+      }
     );
   }),
-
   http.post("/auth/refresh", async ({ cookies }) => {
     const refreshToken = cookies.refreshToken;
 
@@ -101,7 +105,7 @@ export const authHandlers = [
           message: "Refresh token не найден",
           code: "REFRESH_TOKEN_MISSING",
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -129,7 +133,7 @@ export const authHandlers = [
           headers: {
             "Set-Cookie": createRefreshTokenCookie(newRefreshToken),
           },
-        },
+        }
       );
     } catch (error) {
       console.error("Error refreshing token:", error);
@@ -138,7 +142,7 @@ export const authHandlers = [
           message: "Недействительный refresh token",
           code: "INVALID_REFRESH_TOKEN",
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
   }),

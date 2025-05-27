@@ -1,11 +1,13 @@
 import { rqClient } from "@/shared/api/instance";
-import { useCallback, type RefCallback } from "react";
+import { keepPreviousData } from "@tanstack/query-core";
+import { useCallback } from "react";
+import type { RefCallback } from "react";
 
 type UseBoardsListParams = {
   limit?: number;
   isFavorite?: boolean;
   search?: string;
-  sort?: "createdAt" | "updatedAt" | "lastOpened" | "name";
+  sort?: "createdAt" | "updatedAt" | "lastOpenedAt" | "name";
 };
 
 export function useBoardsList({
@@ -37,30 +39,39 @@ export function useBoardsList({
             ? Number(lastPageParams) + 1
             : null,
 
-        // placeholderData: keepPreviousData,
+        placeholderData: keepPreviousData,
       },
     );
-  const cursorRef: RefCallback<HTMLDivElement> = useCallback((el) => {
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.5 }
-    );
+  const cursorRef: RefCallback<HTMLDivElement> = useCallback(
+    (el) => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            fetchNextPage();
+          }
+        },
+        { threshold: 0.5 },
+      );
 
-    if (el) {
-      observer.observe(el);
-      return () => {
-        observer.disconnect();
+      if (el) {
+        observer.observe(el);
+
+        return () => {
+          observer.disconnect();
+        };
       }
-    }
-
-  }, [fetchNextPage])
+    },
+    [fetchNextPage],
+  );
 
   const boards = data?.pages.flatMap((page) => page.list) ?? [];
 
-  return { boards, cursorRef, fetchNextPage, isFetchingNextPage, hasNextPage, isPending };
+  return {
+    boards,
+    isFetchingNextPage,
+    isPending,
+    hasNextPage,
+    cursorRef,
+  };
 }

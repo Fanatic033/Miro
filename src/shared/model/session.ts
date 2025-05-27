@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { createGStore } from "create-gstore";
-import { publicFetchClient } from "@/shared/api/instance.ts";
+import { publicFetchClient } from "../api/instance";
 
 type Session = {
   userId: string;
@@ -11,13 +11,17 @@ type Session = {
 };
 
 const TOKEN_KEY = "token";
+
 let refreshTokenPromise: Promise<string | null> | null = null;
+
 export const useSession = createGStore(() => {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
+
   const login = (token: string) => {
     localStorage.setItem(TOKEN_KEY, token);
     setToken(token);
   };
+
   const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
     setToken(null);
@@ -29,9 +33,10 @@ export const useSession = createGStore(() => {
     if (!token) {
       return null;
     }
+
     const session = jwtDecode<Session>(token);
 
-    if (session.exp < Date.now() / 1000 + 1) {
+    if (session.exp < Date.now() / 1000) {
       if (!refreshTokenPromise) {
         refreshTokenPromise = publicFetchClient
           .POST("/auth/refresh")
@@ -45,16 +50,22 @@ export const useSession = createGStore(() => {
               return null;
             }
           })
-          .finally(() => (refreshTokenPromise = null));
+          .finally(() => {
+            refreshTokenPromise = null;
+          });
       }
+
       const newToken = await refreshTokenPromise;
+
       if (newToken) {
         return newToken;
       } else {
         return null;
       }
     }
+
+    return token;
   };
 
-  return { session, login, logout, refreshToken };
+  return { refreshToken, login, logout, session };
 });

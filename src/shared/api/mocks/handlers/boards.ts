@@ -1,8 +1,9 @@
 import { delay, HttpResponse } from "msw";
 import { http } from "../http";
 import type { ApiSchemas } from "../../schema";
-import { verifyTokenOrThrow } from "../session/session";
+import { verifyTokenOrThrow } from "../session";
 
+// Функция для генерации случайной даты в пределах последних 30 дней
 function randomDate() {
   const start = new Date();
   start.setDate(start.getDate() - 30);
@@ -14,6 +15,7 @@ function randomDate() {
   ).toISOString();
 }
 
+// Функция для генерации случайного названия доски
 function generateBoardName() {
   const adjectives = [
     "Стратегический",
@@ -74,6 +76,7 @@ function generateBoardName() {
   return `${randomAdjective} ${randomNoun} ${randomTheme}`;
 }
 
+// Генерация 1000 случайных досок
 function generateRandomBoards(count: number): ApiSchemas["Board"][] {
   const result: ApiSchemas["Board"][] = [];
 
@@ -85,7 +88,7 @@ function generateRandomBoards(count: number): ApiSchemas["Board"][] {
         new Date().getTime(),
       ),
     ).toISOString(); // Добавляем до 10 дней
-    const lastOpened = new Date(
+    const lastOpenedAt = new Date(
       Math.min(
         new Date(updatedAt).getTime() + Math.random() * 86400000 * 5,
         new Date().getTime(),
@@ -97,7 +100,7 @@ function generateRandomBoards(count: number): ApiSchemas["Board"][] {
       name: generateBoardName(),
       createdAt,
       updatedAt,
-      lastOpened,
+      lastOpenedAt,
       isFavorite: Math.random() > 0.7, // Примерно 30% досок будут избранными
     });
   }
@@ -178,7 +181,8 @@ export const boardsHandlers = [
       );
     }
 
-    board.lastOpened = new Date().toISOString();
+    // Обновляем lastOpenedAt при просмотре доски
+    board.lastOpenedAt = new Date().toISOString();
     return HttpResponse.json(board);
   }),
 
@@ -191,7 +195,7 @@ export const boardsHandlers = [
       name: "New Board",
       createdAt: now,
       updatedAt: now,
-      lastOpened: now,
+      lastOpenedAt: now,
       isFavorite: false,
     };
 
@@ -230,7 +234,7 @@ export const boardsHandlers = [
       );
     }
 
-    const data = (await request.json()) as ApiSchemas["RenamedBoard"];
+    const data = (await request.json()) as ApiSchemas["RenameBoard"];
     board.name = data.name;
     board.updatedAt = new Date().toISOString();
 
@@ -241,7 +245,7 @@ export const boardsHandlers = [
     await verifyTokenOrThrow(request);
     const { boardId } = params;
     const index = boards.findIndex((board) => board.id === boardId);
-    await delay(100);
+    await delay(1000);
     if (index === -1) {
       return HttpResponse.json(
         { message: "Board not found", code: "NOT_FOUND" },

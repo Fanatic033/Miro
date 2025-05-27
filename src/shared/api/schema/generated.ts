@@ -138,7 +138,7 @@ export interface paths {
                 query?: {
                     page?: number;
                     limit?: number;
-                    sort?: "createdAt" | "updatedAt" | "lastOpened" | "name";
+                    sort?: "createdAt" | "updatedAt" | "lastOpenedAt" | "name";
                     isFavorite?: boolean;
                     search?: string;
                 };
@@ -154,7 +154,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["BoardList"];
+                        "application/json": components["schemas"]["BoardsList"];
                     };
                 };
                 401: components["responses"]["UnauthorizedError"];
@@ -196,7 +196,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get board by ID */
+        /** Get a board by id */
         get: {
             parameters: {
                 query?: never;
@@ -208,7 +208,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Board found */
+                /** @description Board */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -259,7 +259,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** update a  board favorite */
+        /** Update a board favorite */
         put: {
             parameters: {
                 query?: never;
@@ -302,7 +302,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Rename a  board */
+        /** Rename a board */
         put: {
             parameters: {
                 query?: never;
@@ -314,7 +314,7 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["RenamedBoard"];
+                    "application/json": components["schemas"]["RenameBoard"];
                 };
             };
             responses: {
@@ -374,10 +374,10 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             /** Format: date-time */
-            lastOpened: string;
+            lastOpenedAt: string;
             isFavorite: boolean;
         };
-        BoardList: {
+        BoardsList: {
             list: components["schemas"]["Board"][];
             total: number;
             totalPages: number;
@@ -385,7 +385,7 @@ export interface components {
         UpdateBoardFavorite: {
             isFavorite: boolean;
         };
-        RenamedBoard: {
+        RenameBoard: {
             name: string;
         };
     };

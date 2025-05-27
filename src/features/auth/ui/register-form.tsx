@@ -1,22 +1,30 @@
+import { Button } from "@/shared/ui/kit/button";
 import {
-  Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
+  FormControl,
   FormMessage,
-} from "@/shared/ui/kit/form.tsx";
-import { Input } from "@/shared/ui/kit/input.tsx";
+  Form,
+} from "@/shared/ui/kit/form";
+import { Input } from "@/shared/ui/kit/input";
 import { useForm } from "react-hook-form";
-import { Button } from "@/shared/ui/kit/button.tsx";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRegister } from "@/features/auth/model/use-register.ts";
+import { useRegister } from "../model/use-register";
 
 const registerSchema = z
   .object({
-    email: z.string().email("Неверный email или пароль"),
-    password: z.string().min(6, "Пароль должен быть не менее 6 символов"),
+    email: z
+      .string({
+        required_error: "Email обязателен",
+      })
+      .email("Неверный email"),
+    password: z
+      .string({
+        required_error: "Пароль обязателен",
+      })
+      .min(6, "Пароль должен быть не менее 6 символов"),
     confirmPassword: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -29,13 +37,13 @@ export function RegisterForm() {
     resolver: zodResolver(registerSchema),
   });
 
-  const { isPending, errorMessage, register } = useRegister();
+  const { errorMessage, isPending, register } = useRegister();
 
-  const onSubmits = form.handleSubmit(register);
+  const onSubmit = form.handleSubmit(register);
 
   return (
     <Form {...form}>
-      <form className={"flex flex-col gap-4"} onSubmit={onSubmits}>
+      <form className="flex flex-col gap-4" onSubmit={onSubmit}>
         <FormField
           control={form.control}
           name="email"
@@ -43,8 +51,9 @@ export function RegisterForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="example@gmail.com" {...field} />
+                <Input placeholder="admin@gmail.com" {...field} />
               </FormControl>
+
               <FormMessage />
             </FormItem>
           )}
@@ -56,8 +65,9 @@ export function RegisterForm() {
             <FormItem>
               <FormLabel>Пароль</FormLabel>
               <FormControl>
-                <Input placeholder="*******" {...field} type={"password"} />
+                <Input placeholder="******" type="password" {...field} />
               </FormControl>
+
               <FormMessage />
             </FormItem>
           )}
@@ -67,22 +77,22 @@ export function RegisterForm() {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Подтвердите Пароль</FormLabel>
+              <FormLabel>Подтвердите пароль</FormLabel>
               <FormControl>
-                <Input {...field} type={"password"} />
+                <Input type="password" {...field} />
               </FormControl>
+
               <FormMessage />
             </FormItem>
           )}
         />
 
         {errorMessage && (
-          <FormMessage className={"text-destructive text-sm"}>
-            {errorMessage}
-          </FormMessage>
+          <p className="text-destructive text-sm">{errorMessage}</p>
         )}
-        <Button type={"submit"} disabled={isPending}>
-          Зарегестрироваться
+
+        <Button disabled={isPending} type="submit">
+          Зарегистрироваться
         </Button>
       </form>
     </Form>

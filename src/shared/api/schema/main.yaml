@@ -47,3 +47,5 @@ paths:
   /boards/{boardId}/rename:
     put:
       $ref: "./endpoints/boards.yaml#/renameBoard"
+
+      

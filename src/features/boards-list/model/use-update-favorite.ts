@@ -13,13 +13,13 @@ export function useUpdateFavorite() {
     {
       onSettled: async () => {
         await queryClient.invalidateQueries(
-          rqClient.queryOptions("get", "/boards")
+          rqClient.queryOptions("get", "/boards"),
         );
       },
-    }
+    },
   );
 
-  const toggle = (board: { id: string; isFavorite: boolean }) =>
+  const toggle = (board: { id: string; isFavorite: boolean }) => {
     startTransition(async () => {
       setFavorite((prev) => ({
         ...prev,
@@ -30,6 +30,7 @@ export function useUpdateFavorite() {
         body: { isFavorite: !board.isFavorite },
       });
     });
+  };
 
   const isOptimisticFavorite = (board: { id: string; isFavorite: boolean }) =>
     favorite[board.id] ?? board.isFavorite;
@@ -39,4 +40,3 @@ export function useUpdateFavorite() {
     isOptimisticFavorite,
   };
 }
-

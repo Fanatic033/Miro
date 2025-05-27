@@ -6,7 +6,7 @@ schemas:
       - name
       - createdAt
       - updatedAt
-      - lastOpened
+      - lastOpenedAt
       - isFavorite
     properties:
       id:
@@ -19,13 +19,12 @@ schemas:
       updatedAt:
         type: string
         format: date-time
-      lastOpened:
+      lastOpenedAt:
         type: string
         format: date-time
       isFavorite:
         type: boolean
-
-  RenamedBoard:
+  RenameBoard:
     type: object
     required:
       - name
@@ -39,7 +38,7 @@ schemas:
     properties:
       isFavorite:
         type: boolean
-  BoardList:
+  BoardsList:
     type: object
     required:
       - list
@@ -55,10 +54,11 @@ schemas:
       totalPages:
         type: integer
 
+      
 getAllBoards:
   summary: Get all boards for current user
   security:
-    - bearerAuth: [ ]
+    - bearerAuth: []
   parameters:
     - name: page
       in: query
@@ -80,7 +80,7 @@ getAllBoards:
         enum:
           - createdAt
           - updatedAt
-          - lastOpened
+          - lastOpenedAt
           - name
     - name: isFavorite
       in: query
@@ -98,13 +98,14 @@ getAllBoards:
       content:
         application/json:
           schema:
-            $ref: '#/schemas/BoardList'
+            $ref: '#/schemas/BoardsList'
     '401':
       $ref: '../shared/responses.yaml#/UnauthorizedError'
 
-
 getBoardById:
-  summary: Get board by ID
+  summary: Get a board by id
+  security:
+    - bearerAuth: []
   parameters:
     - name: boardId
       in: path
@@ -113,7 +114,7 @@ getBoardById:
         type: string
   responses:
     '200':
-      description: Board found
+      description: Board
       content:
         application/json:
           schema:
@@ -123,13 +124,10 @@ getBoardById:
     '404':
       $ref: '../shared/responses.yaml#/NotFoundError'
 
-
-
-
 createBoard:
   summary: Create a new board
   security:
-    - bearerAuth: [ ]
+    - bearerAuth: []
   responses:
     '201':
       description: Board created successfully
@@ -141,9 +139,9 @@ createBoard:
       $ref: '../shared/responses.yaml#/UnauthorizedError'
 
 renameBoard:
-  summary: Rename a  board
+  summary: Rename a board
   security:
-    - bearerAuth: [ ]
+    - bearerAuth: []
   parameters:
     - name: boardId
       in: path
@@ -155,7 +153,7 @@ renameBoard:
     content:
       application/json:
         schema:
-          $ref: '#/schemas/RenamedBoard'
+          $ref: '#/schemas/RenameBoard'
   responses:
     '201':
       description: Board created successfully
@@ -166,11 +164,10 @@ renameBoard:
     '401':
       $ref: '../shared/responses.yaml#/UnauthorizedError'
 
-
 updateBoardFavorite:
-  summary: update a  board favorite
+  summary: Update a board favorite
   security:
-    - bearerAuth: [ ]
+    - bearerAuth: []
   parameters:
     - name: boardId
       in: path
@@ -194,10 +191,11 @@ updateBoardFavorite:
       $ref: '../shared/responses.yaml#/UnauthorizedError'
 
 
+
 deleteBoard:
   summary: Delete a board
   security:
-    - bearerAuth: [ ]
+    - bearerAuth: []
   parameters:
     - name: boardId
       in: path

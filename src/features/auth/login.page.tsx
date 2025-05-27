@@ -1,20 +1,19 @@
-import { AuthLayout } from "@/features/auth/ui/auth.layout.tsx";
+import { ROUTES } from "@/shared/model/routes";
 import { Link } from "react-router-dom";
-import { ROUTES } from "@/shared/model/routes.tsx";
-import { LoginForm } from "./ui/login-form.tsx";
+import { AuthLayout } from "./ui/auth-layout";
+import { LoginForm } from "./ui/login-form";
 
 function LoginPage() {
   return (
     <AuthLayout
-      title={"Вход в систему"}
+      title="Вход в систему"
       description="Введите ваш email и пароль для входа в систему"
+      form={<LoginForm />}
       footerText={
         <>
-          Нет аккаунта?
-          <Link to={ROUTES.REGISTER}>Зарегестрироваться</Link>
+          Нет аккаунта? <Link to={ROUTES.REGISTER}>Зарегистрироваться</Link>
         </>
       }
-      form={<LoginForm />}
     />
   );
 }
